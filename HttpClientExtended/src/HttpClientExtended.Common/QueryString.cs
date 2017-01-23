@@ -18,7 +18,7 @@ namespace HttpClientExtended.Common
             return Convert.ToString(value);
         }
 
-        public virtual void AddKeyValuePair(string key, string value)
+        public virtual void Add(string key, string value)
         {
             if (string.IsNullOrEmpty(key))  throw new ArgumentNullException("key");
             if (string.IsNullOrEmpty(value)) return;
@@ -26,22 +26,25 @@ namespace HttpClientExtended.Common
             Add(new KeyValuePair<string, string>(key.Trim(), value.Trim()));
         }
 
-        public virtual void AddQueryString(string key, object value)
+        public virtual void Add<T>(string key, IEnumerable<T> value)
         {
-            // we check if the value is array, if so, then we have to break the array into multiple key value pairs
-            bool isEnumerable = value?.GetType().IsArray ?? false;
-            if (isEnumerable)
+            foreach (T arrayValue in value)
             {
-                IEnumerable array = (IEnumerable)value;
-                foreach(object arrayValue in array)
+                if(arrayValue is DateTime)
                 {
-                    AddKeyValuePair(key, ConvertValueToString(arrayValue));
+                    Add(key, Convert.ToDateTime(arrayValue));
+                }
+                else
+                {
+                    Add(key, ConvertValueToString(arrayValue));
                 }
             }
-            else
-            {
-                AddKeyValuePair(key, ConvertValueToString(value));
-            }
+        }
+
+        public virtual void Add(string key, DateTime? value)
+        {
+            if (!value.HasValue) return;
+            Add(key, value.Value.ToString("o"));
         }
 
         public virtual async Task<Uri> AsUriAsync(string baseUrl)
