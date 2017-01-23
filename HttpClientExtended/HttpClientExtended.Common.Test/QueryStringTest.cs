@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FluentAssertions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -137,6 +138,93 @@ namespace HttpClientExtended.Common.Test
 
             // assert
             Assert.Empty(queryString);
+        }
+
+        [Fact]
+        public async Task ShouldConvertValuesToUrl()
+        {
+            // arrange
+            QueryString queryString = new QueryString();
+
+            // act
+            queryString.Add("key1", "value1");
+            queryString.Add("key2", "value2");
+            string url = await queryString.AsUrlAsync();
+
+            // assert
+            Assert.True(url == "key1=value1&key2=value2");
+        }
+
+        [Fact]
+        public async Task ShouldConvertArrayToUrl()
+        {
+            // arrange
+            QueryString queryString = new QueryString();
+
+            // act
+            queryString.Add("key1", new int[] { 1, 2, 3 });
+            queryString.Add("key2", "value2");
+            string url = await queryString.AsUrlAsync();
+
+            // assert
+            Assert.True(url == "key1=1&key1=2&key1=3&key2=value2");
+        }
+
+        [Fact]
+        public async Task ShouldConvertEmptyCollectionEdgeCaseToUrl()
+        {
+            // arrange
+            QueryString queryString = new QueryString();
+
+            // act
+            string url = await queryString.AsUrlAsync();
+
+            // assert
+            Assert.True(url == "");
+        }
+
+        [Fact]
+        public async Task ShouldConvertNullValueEdgeCaseToUrl()
+        {
+            // arrange
+            QueryString queryString = new QueryString();
+
+            // act
+            queryString.Add("key1", "");
+            string url = await queryString.AsUrlAsync();
+
+            // assert
+            Assert.True(url == "");
+        }
+
+        [Fact]
+        public async Task ShouldConvertArrayToUri()
+        {
+            // arrange
+            const string baseUrl = "http://localhost";
+            QueryString queryString = new QueryString();
+
+            // act
+            queryString.Add("key1", new int[] { 1, 2, 3 });
+            queryString.Add("key2", "value2");
+            Uri uri = await queryString.AsUriAsync(baseUrl);
+
+            // assert
+            Assert.NotNull(uri);
+            Assert.True(uri.ToString() == "http://localhost/?key1=1&key1=2&key1=3&key2=value2");
+        }
+
+        [Fact]
+        public void ShouldThrowWhenKeyIsNull()
+        {
+            // arrange
+            QueryString queryString = new QueryString();
+
+            // act
+            Action action = () => queryString.Add("", "value2");
+
+            // assert
+            action.ShouldThrow<ArgumentNullException>();
         }
     }
 }
