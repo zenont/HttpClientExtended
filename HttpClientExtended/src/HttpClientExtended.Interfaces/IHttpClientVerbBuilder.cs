@@ -8,18 +8,18 @@ namespace HttpClientExtended.Interfaces
 {
     public interface IHttpClientVerbBuilder<T> where T:HttpClient
     {
-        IHttpClientQueryBuilder<T> Get(Uri uri);
+        IHttpClientQueryBuilder<T> Get(string requestUri);
 
-        IHttpClientQueryBuilder<T> Post(Uri uri);
+        IHttpClientQueryBuilder<T> Post(string requestUri);
 
-        IHttpClientQueryBuilder<T> Post(Uri uri, HttpContent content);
+        IHttpClientQueryBuilder<T> Post(string requestUri, HttpContent content);
 
-        IHttpClientQueryBuilder<T> Put(Uri uri);
+        IHttpClientQueryBuilder<T> Put(string requestUri);
 
-        IHttpClientQueryBuilder<T> Put(Uri uri, HttpContent content);
+        IHttpClientQueryBuilder<T> Put(string requestUri, HttpContent content);
 
-        IHttpClientQueryBuilder<T> Delete(Uri uri);
+        IHttpClientQueryBuilder<T> Delete(string requestUri);
 
-        IHttpClientQueryBuilder<T> Head(Uri uri);
+        IHttpClientQueryBuilder<T> Head(string requestUri);
     }
 }
