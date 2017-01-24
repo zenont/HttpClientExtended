@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace HttpClientExtended.Abstractions
 {
-    public class HttpClientBuilderQuery<T> : IHttpClientQueryBuilder<T> where T: HttpClient
+    public class HttpClientBuilderQuery<T> : IHttpClientQueryBuilder<T> where T : HttpClient
     {
         public HttpClientBuilderQuery(T httpClient, HttpMethod httpMethod, string requestUri, HttpContent content = null)
         {
@@ -29,22 +29,35 @@ namespace HttpClientExtended.Abstractions
 
         protected QueryString QueryString { get; set; } = new QueryString();
 
+        protected IDictionary<string, IEnumerable<string>> Headers = new Dictionary<string, IEnumerable<string>>();
+
         public IHttpClientQueryBuilder<T> Query(string key, string value)
         {
             QueryString.Add(key, value);
             return this;
         }
 
+        public IHttpClientQueryBuilder<T> Header(string key, params string[] value)
+        {
+            Headers.Add(key, value);
+            return this;
+        }
+
         public Task<HttpResponseMessage> SendAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
-            using (HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod, RequestUri))
+            using (HttpRequestMessage request = new HttpRequestMessage(HttpMethod, RequestUri))
             {
-                if (Content != null)
+                foreach(var header in Headers)
                 {
-                    requestMessage.Content = Content;
+                    request.Headers.Add(header.Key, header.Value);
                 }
 
-                return HttpClient.SendAsync(requestMessage, cancellationToken);
+                if (Content != null)
+                {
+                    request.Content = Content;
+                }
+
+                return HttpClient.SendAsync(request, cancellationToken);
             }
         }
     }

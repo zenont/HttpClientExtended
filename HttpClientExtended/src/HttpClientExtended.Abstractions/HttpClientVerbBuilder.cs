@@ -16,39 +16,39 @@ namespace HttpClientExtended.Abstractions
 
         protected T HttpClient { get; set; }
 
-        public IHttpClientQueryBuilder<T> Get(Uri uri)
+        public IHttpClientQueryBuilder<T> Get(string requestUri)
         {
-            return new HttpClientBuilderQuery<T>(HttpClient, HttpMethod.Get);
+            return new HttpClientBuilderQuery<T>(HttpClient, HttpMethod.Get, requestUri);
         }
 
-        public IHttpClientQueryBuilder<T> Post(Uri uri)
+        public IHttpClientQueryBuilder<T> Post(string requestUri)
         {
-            return new HttpClientBuilderQuery<T>(HttpClient, HttpMethod.Post);
+            return new HttpClientBuilderQuery<T>(HttpClient, HttpMethod.Post, requestUri);
         }
 
-        public IHttpClientQueryBuilder<T> Post(Uri uri, HttpContent content)
+        public IHttpClientQueryBuilder<T> Post(string requestUri, HttpContent content)
         {
-            return new HttpClientBuilderQuery<T>(HttpClient, HttpMethod.Post);
+            return new HttpClientBuilderQuery<T>(HttpClient, HttpMethod.Post, requestUri, content);
         }
 
-        public IHttpClientQueryBuilder<T> Put(Uri uri)
+        public IHttpClientQueryBuilder<T> Put(string requestUri)
         {
-            return new HttpClientBuilderQuery<T>(HttpClient, HttpMethod.Put);
+            return new HttpClientBuilderQuery<T>(HttpClient, HttpMethod.Put, requestUri);
         }
 
-        public IHttpClientQueryBuilder<T> Put(Uri uri, HttpContent content)
+        public IHttpClientQueryBuilder<T> Put(string requestUri, HttpContent content)
         {
-            return new HttpClientBuilderQuery<T>(HttpClient, HttpMethod.Put);
+            return new HttpClientBuilderQuery<T>(HttpClient, HttpMethod.Put, requestUri, content);
         }
 
-        public IHttpClientQueryBuilder<T> Delete(Uri uri)
+        public IHttpClientQueryBuilder<T> Delete(string requestUri)
         {
-            return new HttpClientBuilderQuery<T>(HttpClient, HttpMethod.Delete);
+            return new HttpClientBuilderQuery<T>(HttpClient, HttpMethod.Delete, requestUri);
         }
 
-        public IHttpClientQueryBuilder<T> Head(Uri uri)
+        public IHttpClientQueryBuilder<T> Head(string requestUri)
         {
-            return new HttpClientBuilderQuery<T>(HttpClient, HttpMethod.Head);
+            return new HttpClientBuilderQuery<T>(HttpClient, HttpMethod.Head, requestUri);
         }
     }
 }

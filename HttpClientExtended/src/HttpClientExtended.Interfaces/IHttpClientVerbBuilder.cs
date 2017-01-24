@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace HttpClientExtended.Interfaces
 {
-    public interface IHttpClientVerbBuilder<T> where T:HttpClient
+    public interface IHttpClientVerbBuilder<T> where T : HttpClient
     {
         IHttpClientQueryBuilder<T> Get(string requestUri);
 

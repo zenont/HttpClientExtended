@@ -13,38 +13,12 @@ namespace HttpClientExtended.Common
         {
         }
 
-        protected virtual string ConvertValueToString(object value)
-        {
-            return Convert.ToString(value);
-        }
-
         public virtual void Add(string key, string value)
         {
             if (string.IsNullOrEmpty(key))  throw new ArgumentNullException("key");
             if (string.IsNullOrEmpty(value)) return;
 
             Add(new KeyValuePair<string, string>(key.Trim(), value.Trim()));
-        }
-
-        public virtual void Add<T>(string key, IEnumerable<T> value)
-        {
-            foreach (T arrayValue in value)
-            {
-                if(arrayValue is DateTime)
-                {
-                    Add(key, Convert.ToDateTime(arrayValue));
-                }
-                else
-                {
-                    Add(key, ConvertValueToString(arrayValue));
-                }
-            }
-        }
-
-        public virtual void Add(string key, DateTime? value)
-        {
-            if (!value.HasValue) return;
-            Add(key, value.Value.ToString("o"));
         }
 
         public virtual async Task<Uri> AsUriAsync(string baseUrl)
