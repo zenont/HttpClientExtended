@@ -46,31 +46,14 @@ namespace HttpClientExtended.Common
                 throw new ArgumentNullException(nameof(key));
             }
 
-            if (value == null || !value.Any())
-            {
-                return;
-            }
-
             foreach (var v in value)
             {
-                ICollection collection = v as ICollection;
-
-                if(collection != null)
-                {
-                    if (collection.Count <= 0) continue;
-
-                    // if we are enumerable, then we recurse and then skip to the next one
-                    Add(key, collection.Cast<object>().ToArray());
-                    continue;
-                }
-
-                string convertedValue = ConvertValueToString(v);
-                if (string.IsNullOrWhiteSpace(convertedValue))
+                string converted = ConvertValueToString(v);
+                if (string.IsNullOrWhiteSpace(converted))
                 {
                     continue;
                 }
-
-                Add(new KeyValuePair<string, string>(key, convertedValue));
+                Add(new KeyValuePair<string, string>(key, converted));
             }
         }
 

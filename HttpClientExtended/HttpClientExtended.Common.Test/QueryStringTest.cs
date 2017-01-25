@@ -20,7 +20,7 @@ namespace HttpClientExtended.Common.Test
             QueryString queryString = new QueryString();
 
             // act
-            queryString.Add(key, value);
+            queryString.Add(key, value?.ToString());
 
             // assert
             Assert.True(queryString.Single().Value == expected);
@@ -28,11 +28,14 @@ namespace HttpClientExtended.Common.Test
 
         [Theory]
         [InlineData("someKey", new int[] { 1, 2, 3, 4 }, new string[] { "1", "2", "3", "4" })]
-        public void SHouldAddArray(string key, int[] value, string[] expected)
+        public void SHouldAddArray(string key, int[] values, string[] expected)
         {
             // arrange
             QueryString queryString = new QueryString();
-            queryString.Add(key, value);
+            foreach(var v in values)
+            {
+                queryString.Add(key, v.ToString());
+            }
             KeyValuePair<string, string>[] parsedValue = queryString.Where(x => x.Key == key).ToArray();
 
 
@@ -48,12 +51,15 @@ namespace HttpClientExtended.Common.Test
         {
             // arrange
             const string key = "someKey";
-            List<int?> value = new List<int?> { 1, 2, null, 4 };
+            List<int?> values = new List<int?> { 1, 2, null, 4 };
             var expected = new string[] { "1", "2", "4" };
 
             // act
             QueryString queryString = new QueryString();
-            queryString.Add(key, value);
+            foreach (var v in values)
+            {
+                queryString.Add(key, v?.ToString());
+            }
             KeyValuePair<string, string>[] parsedValue = queryString.Where(x => x.Key == key).ToArray();
 
             // assert
@@ -72,12 +78,39 @@ namespace HttpClientExtended.Common.Test
             var value2 = new DateTime(2010, 2, 1, 10, 0, 0);
             var value3 = new DateTime(2010, 3, 1, 10, 0, 0);
 
-            var value = new List<DateTime> { value1, value2, value3 };
+            var values = new List<DateTime> { value1, value2, value3 };
             var expected = new string[] {value1.ToString("o"), value2.ToString("o"), value3.ToString("o") };
 
             // act
             QueryString queryString = new QueryString();
-            queryString.Add(key, value);
+            foreach(var v in values)
+            {
+                queryString.Add(key, v);
+            }
+            KeyValuePair<string, string>[] parsedValue = queryString.Where(x => x.Key == key).ToArray();
+
+            // assert
+            for (int i = 0; i < expected.Length; i++)
+            {
+                Assert.True(parsedValue[i].Value == expected[i]);
+            }
+        }
+
+        [Fact]
+        public void ShouldAddListWithDatetimesCastedToParams()
+        {
+            // arrange
+            const string key = "someKey";
+            var value1 = new DateTime(2010, 1, 1, 10, 0, 0);
+            var value2 = new DateTime(2010, 2, 1, 10, 0, 0);
+            var value3 = new DateTime(2010, 3, 1, 10, 0, 0);
+
+            var values = new List<DateTime> { value1, value2, value3 };
+            var expected = new string[] { value1.ToString("o"), value2.ToString("o"), value3.ToString("o") };
+
+            // act
+            QueryString queryString = new QueryString();
+            queryString.Add(key, values.Cast<object>().ToArray());
             KeyValuePair<string, string>[] parsedValue = queryString.Where(x => x.Key == key).ToArray();
 
             // assert
@@ -96,12 +129,39 @@ namespace HttpClientExtended.Common.Test
             var value2 = new DateTime(2010, 2, 1, 10, 0, 0);
             var value3 = new DateTime(2010, 3, 1, 10, 0, 0);
 
-            var value = new DateTime[] { value1, value2, value3 };
+            var values = new DateTime[] { value1, value2, value3 };
             var expected = new string[] { value1.ToString("o"), value2.ToString("o"), value3.ToString("o") };
 
             // act
             QueryString queryString = new QueryString();
-            queryString.Add(key, value);
+            foreach (var v in values)
+            {
+                queryString.Add(key, v);
+            }
+            KeyValuePair<string, string>[] parsedValue = queryString.Where(x => x.Key == key).ToArray();
+
+            // assert
+            for (int i = 0; i < expected.Length; i++)
+            {
+                Assert.True(parsedValue[i].Value == expected[i]);
+            }
+        }
+
+        [Fact]
+        public void ShouldAddArrayWithDatetimesCastedAsParams()
+        {
+            // arrange
+            const string key = "someKey";
+            var value1 = new DateTime(2010, 1, 1, 10, 0, 0);
+            var value2 = new DateTime(2010, 2, 1, 10, 0, 0);
+            var value3 = new DateTime(2010, 3, 1, 10, 0, 0);
+
+            var values = new DateTime[] { value1, value2, value3 };
+            var expected = new string[] { value1.ToString("o"), value2.ToString("o"), value3.ToString("o") };
+
+            // act
+            QueryString queryString = new QueryString();
+            queryString.Add(key, values.Cast<object>().ToArray());
             KeyValuePair<string, string>[] parsedValue = queryString.Where(x => x.Key == key).ToArray();
 
             // assert
@@ -120,12 +180,15 @@ namespace HttpClientExtended.Common.Test
             DateTime? value2 = null;
             var value3 = new DateTime(2010, 3, 1, 10, 0, 0);
 
-            List<DateTime?> value = new List<DateTime?> { value1, value2, value3 };
+            List<DateTime?> values = new List<DateTime?> { value1, value2, value3 };
             var expected = new string[] { value1.ToString("o"), value3.ToString("o") };
 
             // act
             QueryString queryString = new QueryString();
-            queryString.Add(key, value);
+            foreach (var v in values)
+            {
+                queryString.Add(key, v);
+            }
             KeyValuePair<string, string>[] parsedValue = queryString.Where(x => x.Key == key).ToArray();
 
             // assert
@@ -159,7 +222,7 @@ namespace HttpClientExtended.Common.Test
             QueryString queryString = new QueryString();
 
             // act
-            queryString.Add(key, value1);
+            queryString.Add(key, value1?.ToString());
 
             // assert
             Assert.Empty(queryString);
@@ -185,9 +248,13 @@ namespace HttpClientExtended.Common.Test
         {
             // arrange
             QueryString queryString = new QueryString();
+            var values = new int[] { 1, 2, 3 };
 
             // act
-            queryString.Add("key1", new int[] { 1, 2, 3 });
+            foreach (var v in values)
+            {
+                queryString.Add("key1", v.ToString());
+            }
             queryString.Add("key2", "value2");
             string url = await queryString.AsUrlAsync();
 
@@ -228,9 +295,13 @@ namespace HttpClientExtended.Common.Test
             // arrange
             const string baseUrl = "http://localhost";
             QueryString queryString = new QueryString();
+            var values = new int[] { 1, 2, 3 };
 
             // act
-            queryString.Add("key1", new int[] { 1, 2, 3 });
+            foreach(var v in values)
+            {
+                queryString.Add("key1", v.ToString());
+            }
             queryString.Add("key2", "value2");
             Uri uri = await queryString.AsUriAsync(baseUrl);
 
