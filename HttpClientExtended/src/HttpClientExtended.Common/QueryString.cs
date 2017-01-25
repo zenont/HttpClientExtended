@@ -13,12 +13,53 @@ namespace HttpClientExtended.Common
         {
         }
 
-        public virtual void Add(string key, string value)
+        protected virtual bool ParseFromDate(object value, out string convertedValue)
         {
-            if (string.IsNullOrEmpty(key))  throw new ArgumentNullException("key");
-            if (string.IsNullOrEmpty(value)) return;
+            convertedValue = null;
+            DateTime dateTime;
+            if (DateTime.TryParse(value?.ToString(), out dateTime))
+            {
+                convertedValue = dateTime.ToString("o");
+                return true;
+            }
+            return false;
+        }
 
-            Add(new KeyValuePair<string, string>(key.Trim(), value.Trim()));
+        protected virtual string ConvertValueToString(object value)
+        {
+            if (value == null) return null;
+
+            string convertedValue;
+            if(ParseFromDate(value, out convertedValue))
+            {
+                return convertedValue;
+            }
+
+            return Convert.ToString(value)?.Trim();
+        }
+
+        public virtual void Add(string key, params object[] value)
+        {
+            if (string.IsNullOrEmpty(key))
+            {
+                throw new ArgumentNullException(nameof(key));
+            }
+
+            if (value == null || !value.Any())
+            {
+                return;
+            }
+
+            foreach (var v in value)
+            {
+                string convertedValue = ConvertValueToString(v);
+                if (string.IsNullOrWhiteSpace(convertedValue))
+                {
+                    continue;
+                }
+
+                Add(new KeyValuePair<string, string>(key, convertedValue));
+            }
         }
 
         public virtual async Task<Uri> AsUriAsync(string baseUrl)
