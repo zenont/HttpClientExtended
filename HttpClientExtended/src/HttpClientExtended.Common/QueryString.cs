@@ -13,12 +13,13 @@ namespace HttpClientExtended.Common
         {
         }
 
-        protected virtual bool ParseFromDate(object value, out string convertedValue)
+        protected virtual bool TryParseFromDate(object value, out string convertedValue)
         {
             convertedValue = null;
-            DateTime dateTime;
-            if (DateTime.TryParse(value?.ToString(), out dateTime))
+            
+            if (value is DateTime)
             {
+                DateTime dateTime = (DateTime)value;
                 convertedValue = dateTime.ToString("o");
                 return true;
             }
@@ -30,7 +31,7 @@ namespace HttpClientExtended.Common
             if (value == null) return null;
 
             string convertedValue;
-            if(ParseFromDate(value, out convertedValue))
+            if(TryParseFromDate(value, out convertedValue))
             {
                 return convertedValue;
             }
@@ -52,6 +53,17 @@ namespace HttpClientExtended.Common
 
             foreach (var v in value)
             {
+                ICollection collection = v as ICollection;
+
+                if(collection != null)
+                {
+                    if (collection.Count <= 0) continue;
+
+                    // if we are enumerable, then we recurse and then skip to the next one
+                    Add(key, collection.Cast<object>().ToArray());
+                    continue;
+                }
+
                 string convertedValue = ConvertValueToString(v);
                 if (string.IsNullOrWhiteSpace(convertedValue))
                 {

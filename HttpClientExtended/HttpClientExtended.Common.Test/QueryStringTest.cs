@@ -10,10 +10,11 @@ namespace HttpClientExtended.Common.Test
     public class QueryStringTest
     {
         [Theory]
-        [InlineData("someKey", "True", "True")]
-        [InlineData("someKey", "10", "10")]
+        [InlineData("someKey", true, "True")]
+        [InlineData("someKey", 10, "10")]
+        [InlineData("someKey", 10.103, "10.103")]
         [InlineData("someKey", "10.103", "10.103")]
-        public void ShouldAddKeyValueStrings(string key, string value, string expected)
+        public void ShouldAddKeyValueStrings(string key, object value, string expected)
         {
             // arrange
             QueryString queryString = new QueryString();
@@ -71,8 +72,32 @@ namespace HttpClientExtended.Common.Test
             var value2 = new DateTime(2010, 2, 1, 10, 0, 0);
             var value3 = new DateTime(2010, 3, 1, 10, 0, 0);
 
-            List<DateTime> value = new List<DateTime> { value1, value2, value3 };
+            var value = new List<DateTime> { value1, value2, value3 };
             var expected = new string[] {value1.ToString("o"), value2.ToString("o"), value3.ToString("o") };
+
+            // act
+            QueryString queryString = new QueryString();
+            queryString.Add(key, value);
+            KeyValuePair<string, string>[] parsedValue = queryString.Where(x => x.Key == key).ToArray();
+
+            // assert
+            for (int i = 0; i < expected.Length; i++)
+            {
+                Assert.True(parsedValue[i].Value == expected[i]);
+            }
+        }
+
+        [Fact]
+        public void ShouldAddArrayWithDatetimes()
+        {
+            // arrange
+            const string key = "someKey";
+            var value1 = new DateTime(2010, 1, 1, 10, 0, 0);
+            var value2 = new DateTime(2010, 2, 1, 10, 0, 0);
+            var value3 = new DateTime(2010, 3, 1, 10, 0, 0);
+
+            var value = new DateTime[] { value1, value2, value3 };
+            var expected = new string[] { value1.ToString("o"), value2.ToString("o"), value3.ToString("o") };
 
             // act
             QueryString queryString = new QueryString();
