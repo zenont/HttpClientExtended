@@ -1,4 +1,4 @@
-﻿{
+{
   "version": "1.0.0-*",
   "testRunner": "xunit",
   "buildOptions": {
@@ -15,7 +15,13 @@
     "HttpClientExtended.Common": "1.0.0",
     "FluentAssertions": "4.18.0",
     "HttpClientExtended.Abstractions": "1.0.0",
-    "HttpClientExtended.Interfaces": "1.0.0"
+    "HttpClientExtended.Interfaces": "1.0.0",
+    "Microsoft.AspNetCore.Hosting.Abstractions": "1.0.0",
+    "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0",
+    "Microsoft.AspNetCore.Mvc": "1.0.1",
+    "Microsoft.AspNetCore.Http.Abstractions": "1.0.0",
+    "Microsoft.Extensions.Logging.Abstractions": "1.0.0",
+    "Microsoft.AspNetCore.Mvc.ViewFeatures": "1.0.1"
   },
 
   "frameworks": {
