@@ -5,7 +5,8 @@
     "HttpClientExtended.Common": "1.0.0",
     "HttpClientExtended.Interfaces": "1.0.0",
     "Microsoft.AspNet.WebApi.Client": "5.2.3",
-    "NETStandard.Library": "1.6.1"
+    "NETStandard.Library": "1.6.1",
+    "System.Runtime.Serialization.Xml": "4.3.0"
   },
 
   "frameworks": {
