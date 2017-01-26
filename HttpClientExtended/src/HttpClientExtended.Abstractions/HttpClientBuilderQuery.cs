@@ -31,7 +31,7 @@ namespace HttpClientExtended.Abstractions
 
         protected IDictionary<string, IEnumerable<string>> Headers = new Dictionary<string, IEnumerable<string>>();
 
-        public IHttpClientQueryBuilder<T> Query(string key, params object[] value)
+        public IHttpClientQueryBuilder<T> Query(string key, object value)
         {
             QueryString.Add(key, value);
             return this;

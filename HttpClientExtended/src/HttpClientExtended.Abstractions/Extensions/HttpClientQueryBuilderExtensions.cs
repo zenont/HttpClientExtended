@@ -9,30 +9,15 @@ using System.Threading.Tasks;
 
 namespace HttpClientExtended.Abstractions.Extensions
 {
-    public static class HttpClientBuilderQueryExtensions
+    public static class HttpClientQueryBuilderExtensions
     {
-        public static IHttpClientQueryBuilder<KClient> Query<KClient, TValue>(this IHttpClientQueryBuilder<KClient> builder, string key, params TValue[] value) where KClient:HttpClient
+        public static IHttpClientQueryBuilder<KClient> QueryFromArray<KClient, TValue>(this IHttpClientQueryBuilder<KClient> builder, string key, IEnumerable<TValue> value) where KClient:HttpClient
         {
             foreach (TValue arrayValue in value)
             {
                 if (arrayValue == null) continue;
-
-                if (arrayValue is DateTime)
-                {
-                    builder.Query(key, Convert.ToDateTime(arrayValue));
-                }
-                else
-                {
-                    builder.Query(key, Convert.ToString(arrayValue));
-                }
+                builder.Query(key, arrayValue);                
             }
-            return builder;
-        }
-
-        public static IHttpClientQueryBuilder<KClient> Query<KClient>(this IHttpClientQueryBuilder<KClient> builder, string key, DateTime? value) where KClient : HttpClient
-        {
-            if (!value.HasValue) return builder;
-            builder.Query(key, value.Value.ToString("o"));
             return builder;
         }
 

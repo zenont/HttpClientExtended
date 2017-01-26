@@ -39,22 +39,19 @@ namespace HttpClientExtended.Common
             return Convert.ToString(value)?.Trim();
         }
 
-        public virtual void Add(string key, params object[] value)
+        public virtual void Add(string key, object value)
         {
             if (string.IsNullOrEmpty(key))
             {
                 throw new ArgumentNullException(nameof(key));
             }
 
-            foreach (var v in value)
+            string converted = ConvertValueToString(value);
+            if (string.IsNullOrWhiteSpace(converted))
             {
-                string converted = ConvertValueToString(v);
-                if (string.IsNullOrWhiteSpace(converted))
-                {
-                    continue;
-                }
-                Add(new KeyValuePair<string, string>(key, converted));
+                return;
             }
+            Add(new KeyValuePair<string, string>(key, converted));
         }
 
         public virtual async Task<Uri> AsUriAsync(string baseUrl)

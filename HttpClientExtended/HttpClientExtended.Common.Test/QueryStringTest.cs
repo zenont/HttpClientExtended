@@ -110,7 +110,11 @@ namespace HttpClientExtended.Common.Test
 
             // act
             QueryString queryString = new QueryString();
-            queryString.Add(key, values.Cast<object>().ToArray());
+            foreach(var v in values)
+            {
+                queryString.Add(key, v);
+            }
+            
             KeyValuePair<string, string>[] parsedValue = queryString.Where(x => x.Key == key).ToArray();
 
             // assert
@@ -161,7 +165,10 @@ namespace HttpClientExtended.Common.Test
 
             // act
             QueryString queryString = new QueryString();
-            queryString.Add(key, values.Cast<object>().ToArray());
+            foreach(var v in values)
+            {
+                queryString.Add(key, v);
+            }
             KeyValuePair<string, string>[] parsedValue = queryString.Where(x => x.Key == key).ToArray();
 
             // assert

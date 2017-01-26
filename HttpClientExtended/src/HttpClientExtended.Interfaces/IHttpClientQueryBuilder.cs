@@ -14,6 +14,6 @@ namespace HttpClientExtended.Interfaces
 
     public interface IHttpClientQueryBuilder<T> : IHttpClientQueryBuilder where T : HttpClient
     {
-        IHttpClientQueryBuilder<T> Query(string key, object[] value);
+        IHttpClientQueryBuilder<T> Query(string key, object value);
     }
 }
