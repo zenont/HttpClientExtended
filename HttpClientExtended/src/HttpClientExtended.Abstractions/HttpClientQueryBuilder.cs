@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 
 namespace HttpClientExtended.Abstractions
 {
-    public class HttpClientBuilderQuery<T> : IHttpClientQueryBuilder<T> where T : HttpClient
+    public class HttpClientQueryBuilder<T> : IHttpClientQueryBuilder<T> where T : HttpClient
     {
-        public HttpClientBuilderQuery(T httpClient, HttpMethod httpMethod, string requestUri, HttpContent content = null)
+        public HttpClientQueryBuilder(T httpClient, HttpMethod httpMethod, string requestUri, HttpContent content = null)
         {
             HttpClient = httpClient;
             HttpMethod = httpMethod;
@@ -19,17 +19,25 @@ namespace HttpClientExtended.Abstractions
             RequestUri = requestUri;
         }
 
-        protected T HttpClient { get; set; }
+        public T HttpClient { get; protected set; }
 
-        protected HttpMethod HttpMethod { get; set; }
+        public HttpMethod HttpMethod { get; protected set; }
 
-        protected HttpContent Content { get; set; }
+        public HttpContent Content { get; protected set; }
 
-        protected string RequestUri { get; set; }
+        public string RequestUri { get; protected set; }
 
-        protected QueryString QueryString { get; set; } = new QueryString();
+        public QueryString QueryString { get; protected set; } = new QueryString();
 
-        protected IDictionary<string, IEnumerable<string>> Headers = new Dictionary<string, IEnumerable<string>>();
+        public IDictionary<string, IEnumerable<string>> Headers { get; protected set; } = new Dictionary<string, IEnumerable<string>>();
+
+        HttpClient IHttpClientQueryBuilder.HttpClient
+        {
+            get
+            {
+                return HttpClient;
+            }
+        }
 
         public IHttpClientQueryBuilder<T> Query(string key, object value)
         {

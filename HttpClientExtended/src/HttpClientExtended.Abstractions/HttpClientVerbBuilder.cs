@@ -18,37 +18,37 @@ namespace HttpClientExtended.Abstractions
 
         public IHttpClientQueryBuilder<T> Get(string requestUri)
         {
-            return new HttpClientBuilderQuery<T>(HttpClient, HttpMethod.Get, requestUri);
+            return new HttpClientQueryBuilder<T>(HttpClient, HttpMethod.Get, requestUri);
         }
 
         public IHttpClientQueryBuilder<T> Post(string requestUri)
         {
-            return new HttpClientBuilderQuery<T>(HttpClient, HttpMethod.Post, requestUri);
+            return new HttpClientQueryBuilder<T>(HttpClient, HttpMethod.Post, requestUri);
         }
 
         public IHttpClientQueryBuilder<T> Post(string requestUri, HttpContent content)
         {
-            return new HttpClientBuilderQuery<T>(HttpClient, HttpMethod.Post, requestUri, content);
+            return new HttpClientQueryBuilder<T>(HttpClient, HttpMethod.Post, requestUri, content);
         }
 
         public IHttpClientQueryBuilder<T> Put(string requestUri)
         {
-            return new HttpClientBuilderQuery<T>(HttpClient, HttpMethod.Put, requestUri);
+            return new HttpClientQueryBuilder<T>(HttpClient, HttpMethod.Put, requestUri);
         }
 
         public IHttpClientQueryBuilder<T> Put(string requestUri, HttpContent content)
         {
-            return new HttpClientBuilderQuery<T>(HttpClient, HttpMethod.Put, requestUri, content);
+            return new HttpClientQueryBuilder<T>(HttpClient, HttpMethod.Put, requestUri, content);
         }
 
         public IHttpClientQueryBuilder<T> Delete(string requestUri)
         {
-            return new HttpClientBuilderQuery<T>(HttpClient, HttpMethod.Delete, requestUri);
+            return new HttpClientQueryBuilder<T>(HttpClient, HttpMethod.Delete, requestUri);
         }
 
         public IHttpClientQueryBuilder<T> Head(string requestUri)
         {
-            return new HttpClientBuilderQuery<T>(HttpClient, HttpMethod.Head, requestUri);
+            return new HttpClientQueryBuilder<T>(HttpClient, HttpMethod.Head, requestUri);
         }
     }
 }
