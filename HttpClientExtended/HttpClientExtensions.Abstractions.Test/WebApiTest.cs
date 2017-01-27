@@ -100,5 +100,51 @@ namespace HttpClientExtensions.Abstractions.Test
             Assert.True(result.NonNullDateTime.Second == value.Second);
             Assert.True(result.NonNullDateTime.Millisecond == value.Millisecond);
         }
+
+        [Fact]
+        public async Task ShouldGetSuccessfulHttpResponseWithNonNullableDateTimeOffsetQueryString()
+        {
+            // arrange
+            DateTime datetime = new DateTime(2010, 5, 11, 10, 30, 0, 03);
+            DateTimeOffset value = new DateTimeOffset(datetime, TimeSpan.FromHours(8));
+            const string requestUri = "/fake";
+            CancellationToken cancellationToken = CancellationToken.None;
+            var webHostBuilder = new WebHostBuilder()
+                .Configure(app =>
+                {
+                    app.Run(async context =>
+                    {
+                        DateTimeOffset parsedResult;
+                        string r = context.Request.Query.FirstOrDefault(q => q.Key == nameof(value)).Value.FirstOrDefault();
+                        DateTimeOffset.TryParse(r, out parsedResult);
+                        context.Response.ContentType = "application/json";
+                        var resultPayload = JsonConvert.SerializeObject(new FakePayload { DateTimeOffset = parsedResult });
+                        await context.Response.WriteAsync(resultPayload);
+                    });
+                });
+            TestServer server = new TestServer(webHostBuilder);
+            HttpClient client = server.CreateClient();
+            IHttpClientVerbBuilder<HttpClient> builder = new HttpClientVerbBuilder<HttpClient>(client);
+
+            // act
+            HttpResponseMessage response = await client
+                .Request()
+                .Get(requestUri)
+                .Query(nameof(value), value)
+                .SendAsync();
+
+            // assert
+            Assert.True(response.IsSuccessStatusCode);
+            Assert.NotNull(response.Content);
+            var result = await response.Content.ReadAsAsync<FakePayload>(cancellationToken);
+            Assert.True(result.DateTimeOffset.Year == value.Year);
+            Assert.True(result.DateTimeOffset.Month == value.Month);
+            Assert.True(result.DateTimeOffset.Day == value.Day);
+            Assert.True(result.DateTimeOffset.Hour == value.Hour);
+            Assert.True(result.DateTimeOffset.Minute == value.Minute);
+            Assert.True(result.DateTimeOffset.Second == value.Second);
+            Assert.True(result.DateTimeOffset.Millisecond == value.Millisecond);
+            Assert.True(result.DateTimeOffset.Offset.TotalHours == value.Offset.TotalHours);
+        }
     }
 }

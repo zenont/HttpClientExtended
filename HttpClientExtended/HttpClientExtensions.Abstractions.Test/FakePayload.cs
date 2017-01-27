@@ -15,6 +15,8 @@ namespace HttpClientExtensions.Abstractions.Test
 
         public DateTime? NullableDateTime { get; set; }
 
+        public DateTimeOffset DateTimeOffset { get; set; }
+
         public string Note { get; set; }
     }
 }

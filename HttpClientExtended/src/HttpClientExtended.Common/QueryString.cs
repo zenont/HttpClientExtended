@@ -17,6 +17,13 @@ namespace HttpClientExtended.Common
         {
             convertedValue = null;
             
+            if(value is DateTimeOffset)
+            {
+                DateTimeOffset dateTimeOffset = (DateTimeOffset)value;
+                convertedValue = dateTimeOffset.ToString("o");
+                return true;
+            }
+
             if (value is DateTime)
             {
                 DateTime dateTime = (DateTime)value;
