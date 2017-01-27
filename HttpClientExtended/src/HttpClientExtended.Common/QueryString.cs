@@ -23,8 +23,7 @@ namespace HttpClientExtended.Common
                 convertedValue = dateTimeOffset.ToString("o");
                 return true;
             }
-
-            if (value is DateTime)
+            else if (value is DateTime)
             {
                 DateTime dateTime = (DateTime)value;
                 convertedValue = dateTime.ToString("o");
