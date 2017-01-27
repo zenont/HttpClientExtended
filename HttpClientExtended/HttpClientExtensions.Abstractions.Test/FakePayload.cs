@@ -18,5 +18,7 @@ namespace HttpClientExtensions.Abstractions.Test
         public DateTimeOffset DateTimeOffset { get; set; }
 
         public string Note { get; set; }
+
+        public string[] SomeArray { get; set; }
     }
 }
