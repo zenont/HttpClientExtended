@@ -51,9 +51,10 @@ namespace HttpClientExtended.Abstractions
             return this;
         }
 
-        public Task<HttpResponseMessage> SendAsync(CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<HttpResponseMessage> SendAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
-            using (HttpRequestMessage request = new HttpRequestMessage(HttpMethod, RequestUri))
+            Uri uri = await QueryString.AsUriAsync(RequestUri);
+            using (HttpRequestMessage request = new HttpRequestMessage(HttpMethod, uri.ToString()))
             {
                 foreach(var header in Headers)
                 {
@@ -65,7 +66,7 @@ namespace HttpClientExtended.Abstractions
                     request.Content = Content;
                 }
 
-                return HttpClient.SendAsync(request, cancellationToken);
+                return await HttpClient.SendAsync(request, cancellationToken);
             }
         }
     }
