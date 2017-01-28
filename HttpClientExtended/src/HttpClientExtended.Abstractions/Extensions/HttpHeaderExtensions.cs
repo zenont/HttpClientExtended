@@ -13,9 +13,19 @@ namespace HttpClientExtended.Abstractions.Extensions
             header.Add(new MediaTypeWithQualityHeaderValue(mediaType));
         }
 
-        public static void Add(this HttpHeaderValueCollection<MediaTypeWithQualityHeaderValue> header, string mediaType, int quality)
+        public static void Add(this HttpHeaderValueCollection<MediaTypeWithQualityHeaderValue> header, string mediaType, double quality)
         {
             header.Add(new MediaTypeWithQualityHeaderValue(mediaType, quality));
+        }
+
+        public static void Add(this HttpHeaderValueCollection<StringWithQualityHeaderValue> header, string value)
+        {
+            header.Add(new StringWithQualityHeaderValue(value));
+        }
+
+        public static void Add(this HttpHeaderValueCollection<StringWithQualityHeaderValue> header, string value, double quality)
+        {
+            header.Add(new StringWithQualityHeaderValue(value, quality));
         }
     }
 }

@@ -13,6 +13,10 @@ namespace HttpClientExtended.Abstractions
 {
     public class HttpClientQueryBuilder<T> : IHttpClientQueryBuilder<T> where T : HttpClient
     {
+        protected const string SetCookieHeader = "Set-Cookie";
+        protected List<KeyValuePair<string, string[]>> _cookieHeaders = new List<KeyValuePair<string, string[]>>();
+        protected IDictionary<string, string[]> _headers = new Dictionary<string, string[]>();
+
         public HttpClientQueryBuilder(T httpClient, HttpMethod httpMethod, string requestUri, HttpContent content = null)
         {
             HttpClient = httpClient;
@@ -20,8 +24,6 @@ namespace HttpClientExtended.Abstractions
             Content = content;
             RequestUri = requestUri;
         }
-
-        protected ConcurrentQueue<Action<HttpRequestHeaders>> HeaderDelegates = new ConcurrentQueue<Action<HttpRequestHeaders>>();
 
         public T HttpClient { get; protected set; }
 
@@ -33,7 +35,13 @@ namespace HttpClientExtended.Abstractions
 
         public QueryString QueryString { get; protected set; } = new QueryString();
 
-        //public IDictionary<string, string[]> Headers { get; protected set; } = new Dictionary<string, string[]>();
+        public IEnumerable<KeyValuePair<string, string[]>> Headers
+        {
+            get
+            {
+                return _headers.Union(_cookieHeaders);
+            }
+        }
 
         HttpClient IHttpClientQueryBuilder.HttpClient
         {
@@ -51,13 +59,16 @@ namespace HttpClientExtended.Abstractions
 
         public IHttpClientQueryBuilder<T> Header(string key, params string[] value)
         {
-            Headers.Add(key, value);
-            return this;
-        }
-
-        public IHttpClientQueryBuilder<T> Header(Action<HttpRequestHeaders> headerAction)
-        {
-            HeaderDelegates.Enqueue(headerAction);
+            if (key.Equals(SetCookieHeader, StringComparison.OrdinalIgnoreCase))
+            {
+                // set-cookie headers can be duplicate
+                _cookieHeaders.Add(new KeyValuePair<string, string[]>(key, value));
+            }
+            else
+            {
+                // all other cookies must be unique
+                _headers.Add(key, value);
+            }
             return this;
         }
 
@@ -75,7 +86,7 @@ namespace HttpClientExtended.Abstractions
             Uri uri = await QueryString.AsUriAsync(RequestUri);
 
             var request = new HttpRequestMessage(HttpMethod, uri.ToString());
-            foreach (var header in Headers)
+            foreach(var header in Headers)
             {
                 request.Headers.Add(header.Key, header.Value);
             }

@@ -20,8 +20,10 @@ namespace HttpClientExtensions.Abstractions.Test
         {
             // arrange
             const string requestUri = "/fake";
+            const string charset = "utf-8";
+            const double quality = 1.02;
             const string mediaType = "text/html";
-            const string charset = "utf - 8";
+            string value = $"{mediaType};charset={charset};q={quality}";
             HttpClient client = new HttpClient();
             IHttpClientVerbBuilder<HttpClient> builder = new HttpClientVerbBuilder<HttpClient>(client);
 
@@ -29,14 +31,40 @@ namespace HttpClientExtensions.Abstractions.Test
             HttpRequestMessage httpRequest = await client
                 .Request()
                 .Get(requestUri)
-                .Header(h => h.Accept.Add(mediaType, 1))
+                .Header("Accept", value)
                 .BuildHttpRequestAsync();
-            MediaTypeWithQualityHeaderValue requestAcceptHeader = httpRequest.Headers.Accept.FirstOrDefault();
+            MediaTypeWithQualityHeaderValue header = httpRequest.Headers.Accept.FirstOrDefault();
 
             // assert
-            Assert.NotNull(requestAcceptHeader);
-            Assert.True(requestAcceptHeader.MediaType == mediaType);
-            Assert.True(requestAcceptHeader.CharSet == charset);
+            Assert.NotNull(header);
+            Assert.True(header.MediaType == mediaType);
+            Assert.True(header.CharSet == charset);
+            Assert.True(header.Quality == quality);
+        }
+
+        [Fact]
+        public async Task ShouldSetAcceptCharsetHeaderInRequest()
+        {
+            // arrange
+            const string requestUri = "/fake";
+            const double quality = 1;
+            const string charset = "utf-8";
+            string value = $"{charset};q={quality}";
+            HttpClient client = new HttpClient();
+            IHttpClientVerbBuilder<HttpClient> builder = new HttpClientVerbBuilder<HttpClient>(client);
+
+            // act
+            HttpRequestMessage httpRequest = await client
+                .Request()
+                .Get(requestUri)
+                .Header("Accept-Charset", value)
+                .BuildHttpRequestAsync();
+            StringWithQualityHeaderValue header = httpRequest.Headers.AcceptCharset.FirstOrDefault();
+
+            // assert
+            Assert.NotNull(header);
+            Assert.True(header.Quality == quality);
+            Assert.True(header.Value == charset);
         }
     }
 }

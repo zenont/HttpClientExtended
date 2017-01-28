@@ -23,8 +23,6 @@ namespace HttpClientExtended.Interfaces
 
         QueryString QueryString { get; }
 
-        IDictionary<string, string[]> Headers { get; }
-
         Task<HttpRequestMessage> BuildHttpRequestAsync();
     }
 
@@ -35,7 +33,5 @@ namespace HttpClientExtended.Interfaces
         IHttpClientQueryBuilder<T> Query(string key, object value);
 
         IHttpClientQueryBuilder<T> Header(string key, params string[] value);
-
-        IHttpClientQueryBuilder<T> Header(Action<HttpRequestHeaders> headerAction);
     }
 }
