@@ -4,6 +4,7 @@ using HttpClientExtended.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading;
@@ -28,8 +29,7 @@ namespace HttpClientExtensions.Abstractions.Test
             HttpRequestMessage httpRequest = await client
                 .Request()
                 .Get(requestUri)
-                .Header("Accept", mediaType, charset)
-                //.Header("Accept-Charset", charset)
+                .Header(h => h.Accept.Add(mediaType, 1))
                 .BuildHttpRequestAsync();
             MediaTypeWithQualityHeaderValue requestAcceptHeader = httpRequest.Headers.Accept.FirstOrDefault();
 

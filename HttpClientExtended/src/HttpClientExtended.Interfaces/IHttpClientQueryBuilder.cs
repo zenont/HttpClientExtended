@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using HttpClientExtended.Common;
+using System.Net.Http.Headers;
 
 namespace HttpClientExtended.Interfaces
 {
@@ -34,5 +35,7 @@ namespace HttpClientExtended.Interfaces
         IHttpClientQueryBuilder<T> Query(string key, object value);
 
         IHttpClientQueryBuilder<T> Header(string key, params string[] value);
+
+        IHttpClientQueryBuilder<T> Header(Action<HttpRequestHeaders> headerAction);
     }
 }

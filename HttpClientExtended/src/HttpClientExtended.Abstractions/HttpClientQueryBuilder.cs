@@ -1,6 +1,7 @@
 ﻿using HttpClientExtended.Common;
 using HttpClientExtended.Interfaces;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -20,6 +21,8 @@ namespace HttpClientExtended.Abstractions
             RequestUri = requestUri;
         }
 
+        protected ConcurrentQueue<Action<HttpRequestHeaders>> HeaderDelegates = new ConcurrentQueue<Action<HttpRequestHeaders>>();
+
         public T HttpClient { get; protected set; }
 
         public HttpMethod HttpMethod { get; protected set; }
@@ -30,7 +33,7 @@ namespace HttpClientExtended.Abstractions
 
         public QueryString QueryString { get; protected set; } = new QueryString();
 
-        public IDictionary<string, string[]> Headers { get; protected set; } = new Dictionary<string, string[]>();
+        //public IDictionary<string, string[]> Headers { get; protected set; } = new Dictionary<string, string[]>();
 
         HttpClient IHttpClientQueryBuilder.HttpClient
         {
@@ -52,6 +55,12 @@ namespace HttpClientExtended.Abstractions
             return this;
         }
 
+        public IHttpClientQueryBuilder<T> Header(Action<HttpRequestHeaders> headerAction)
+        {
+            HeaderDelegates.Enqueue(headerAction);
+            return this;
+        }
+
         public virtual async Task<HttpRequestMessage> BuildHttpRequestAsync()
         {
             if (string.IsNullOrWhiteSpace(RequestUri))
@@ -66,7 +75,6 @@ namespace HttpClientExtended.Abstractions
             Uri uri = await QueryString.AsUriAsync(RequestUri);
 
             var request = new HttpRequestMessage(HttpMethod, uri.ToString());
-
             foreach (var header in Headers)
             {
                 request.Headers.Add(header.Key, header.Value);
