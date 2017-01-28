@@ -22,6 +22,37 @@ namespace HttpClientExtensions.Abstractions.Test
     public class WebApiTest
     {
         [Fact]
+        public async Task ShouldHttpMethodGet()
+        {
+            // arrange
+            const string requestUri = "/fake";
+            string method = null;
+            CancellationToken cancellationToken = CancellationToken.None;
+            var webHostBuilder = new WebHostBuilder()
+                .Configure(app =>
+                {
+                    app.Run(async context =>
+                    {
+                        method = context.Request.Method;
+                        context.Response.StatusCode = 200;
+                    });
+                });
+            TestServer server = new TestServer(webHostBuilder);
+            HttpClient client = server.CreateClient();
+            IHttpClientVerbBuilder<HttpClient> builder = new HttpClientVerbBuilder<HttpClient>(client);
+
+            // act
+            HttpResponseMessage response = await client
+                .Request()
+                .Get(requestUri)
+                .SendAsync();
+
+            // assert
+            Assert.True(response.IsSuccessStatusCode);
+            Assert.Matches("GET", method);
+        }
+
+        [Fact]
         public async Task ShouldGetSuccessfulHttpResponseWithInt32QueryString()
         {
             // arrange
@@ -243,6 +274,38 @@ namespace HttpClientExtensions.Abstractions.Test
         }
 
         [Fact]
+        public async Task ShouldHttpMethodPost()
+        {
+            // arrange
+            var datetime = new DateTime(2013, 9, 1, 10, 9, 0);
+            const string requestUri = "/fake";
+            string method = null;
+            CancellationToken cancellationToken = CancellationToken.None;
+            var webHostBuilder = new WebHostBuilder()
+                .Configure(app =>
+                {
+                    app.Run(async context =>
+                    {
+                        method = context.Request.Method;
+                        context.Response.StatusCode = 200;
+                    });
+                });
+            TestServer server = new TestServer(webHostBuilder);
+            HttpClient client = server.CreateClient();
+            IHttpClientVerbBuilder<HttpClient> builder = new HttpClientVerbBuilder<HttpClient>(client);
+
+            // act
+            var response = await client
+                .Request()
+                .Post(requestUri)
+                .SendAsync(cancellationToken);
+
+            // assert
+            Assert.True(response.IsSuccessStatusCode);
+            Assert.Matches("POST", method);
+        }
+
+        [Fact]
         public async Task ShouldPostSuccessfulHttpResponseWithPayload()
         {
             // arrange
@@ -299,6 +362,38 @@ namespace HttpClientExtensions.Abstractions.Test
         }
 
         [Fact]
+        public async Task ShouldHttpMethodPut()
+        {
+            // arrange
+            var datetime = new DateTime(2013, 9, 1, 10, 9, 0);
+            const string requestUri = "/fake";
+            string method = null;
+            CancellationToken cancellationToken = CancellationToken.None;
+            var webHostBuilder = new WebHostBuilder()
+                .Configure(app =>
+                {
+                    app.Run(async context =>
+                    {
+                        method = context.Request.Method;
+                        context.Response.StatusCode = 200;
+                    });
+                });
+            TestServer server = new TestServer(webHostBuilder);
+            HttpClient client = server.CreateClient();
+            IHttpClientVerbBuilder<HttpClient> builder = new HttpClientVerbBuilder<HttpClient>(client);
+
+            // act
+            var response = await client
+                .Request()
+                .Put(requestUri)
+                .SendAsync(cancellationToken);
+
+            // assert
+            Assert.True(response.IsSuccessStatusCode);
+            Assert.Matches("PUT", method);
+        }
+
+        [Fact]
         public async Task ShouldPutSuccessfulHttpResponseWithPayload()
         {
             // arrange
@@ -352,6 +447,79 @@ namespace HttpClientExtensions.Abstractions.Test
             Assert.True(result.SomeArray[0] == "lol1");
             Assert.True(result.SomeArray[1] == "lol2");
             Assert.True(result.SomeArray[2] == "lol3");
+        }
+
+        [Fact]
+        public async Task ShouldHttpMethodDelete()
+        {
+            // arrange
+            string requestUri = "/fake";
+            string method = null;
+            CancellationToken cancellationToken = CancellationToken.None;
+            var webHostBuilder = new WebHostBuilder()
+                .Configure(app =>
+                {
+                    app.Run(async context =>
+                    {
+                        method = context.Request.Method;
+                        context.Response.StatusCode = 200;
+                    });
+                });
+            TestServer server = new TestServer(webHostBuilder);
+            HttpClient client = server.CreateClient();
+            IHttpClientVerbBuilder<HttpClient> builder = new HttpClientVerbBuilder<HttpClient>(client);
+
+            // act
+            HttpResponseMessage response = await client
+                .Request()
+                .Delete(requestUri)
+                .SendAsync();
+
+            // assert
+            Assert.True(response.IsSuccessStatusCode);
+            Assert.Matches("DELETE", method);
+        }
+
+        [Fact]
+        public async Task ShouldDeleteSuccessfulHttpResponseWithMultipleQueryString()
+        {
+            // arrange
+            const int id = 15;
+            const string lol = "lol";
+            const string requestUri = "/fake";
+            CancellationToken cancellationToken = CancellationToken.None;
+            var webHostBuilder = new WebHostBuilder()
+                .Configure(app =>
+                {
+                    app.Run(async context =>
+                    {
+                        int parsedResult = -1;
+                        string r = context.Request.Query.FirstOrDefault(q => q.Key == nameof(id)).Value.FirstOrDefault();
+                        string lolResult = context.Request.Query.FirstOrDefault(q => q.Key == nameof(lol)).Value.FirstOrDefault();
+                        int.TryParse(r, out parsedResult);
+                        context.Response.ContentType = "application/json";
+                        var resultPayload = JsonConvert.SerializeObject(new FakePayload { Id = parsedResult, Note = lolResult });
+                        await context.Response.WriteAsync(resultPayload);
+                    });
+                });
+            TestServer server = new TestServer(webHostBuilder);
+            HttpClient client = server.CreateClient();
+            IHttpClientVerbBuilder<HttpClient> builder = new HttpClientVerbBuilder<HttpClient>(client);
+
+            // act
+            HttpResponseMessage response = await client
+                .Request()
+                .Delete(requestUri)
+                .Query(nameof(id), id)
+                .Query(nameof(lol), lol)
+                .SendAsync();
+
+            // assert
+            Assert.True(response.IsSuccessStatusCode);
+            Assert.NotNull(response.Content);
+            var result = await response.Content.ReadAsAsync<FakePayload>(cancellationToken);
+            Assert.True(result.Id == id);
+            Assert.True(result.Note == lol);
         }
     }
 }
