@@ -20,7 +20,7 @@ namespace HttpClientExtensions.Abstractions.Test
             // arrange
             const string requestUri = "/fake";
             const string mediaType = "text/html";
-            const string charset = "utf - 8, iso - 8859 - 1; q = 0.5";
+            const string charset = "utf - 8";
             HttpClient client = new HttpClient();
             IHttpClientVerbBuilder<HttpClient> builder = new HttpClientVerbBuilder<HttpClient>(client);
 
@@ -28,8 +28,8 @@ namespace HttpClientExtensions.Abstractions.Test
             HttpRequestMessage httpRequest = await client
                 .Request()
                 .Get(requestUri)
-                .Header("Accept", mediaType)
-                .Header("Accept-Charset", charset)
+                .Header("Accept", mediaType, charset)
+                //.Header("Accept-Charset", charset)
                 .BuildHttpRequestAsync();
             MediaTypeWithQualityHeaderValue requestAcceptHeader = httpRequest.Headers.Accept.FirstOrDefault();
 

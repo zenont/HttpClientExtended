@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -29,7 +30,7 @@ namespace HttpClientExtended.Abstractions
 
         public QueryString QueryString { get; protected set; } = new QueryString();
 
-        public IDictionary<string, IEnumerable<string>> Headers { get; protected set; } = new Dictionary<string, IEnumerable<string>>();
+        public IDictionary<string, string[]> Headers { get; protected set; } = new Dictionary<string, string[]>();
 
         HttpClient IHttpClientQueryBuilder.HttpClient
         {

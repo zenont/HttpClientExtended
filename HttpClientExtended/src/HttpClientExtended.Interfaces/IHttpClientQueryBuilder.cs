@@ -22,7 +22,7 @@ namespace HttpClientExtended.Interfaces
 
         QueryString QueryString { get; }
 
-        IDictionary<string, IEnumerable<string>> Headers { get; }
+        IDictionary<string, string[]> Headers { get; }
 
         Task<HttpRequestMessage> BuildHttpRequestAsync();
     }
