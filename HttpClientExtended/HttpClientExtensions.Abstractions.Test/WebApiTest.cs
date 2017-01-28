@@ -13,6 +13,9 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using HttpClientExtended.Abstractions.Extensions;
+using System.Net.Http.Formatting;
+using System.IO;
+using System.Text;
 
 namespace HttpClientExtensions.Abstractions.Test
 {
@@ -236,6 +239,119 @@ namespace HttpClientExtensions.Abstractions.Test
             Assert.True(result.SomeArray[0] == col[0]);
             Assert.True(result.SomeArray[1] == col[1]);
             Assert.True(result.SomeArray[2] == col[2]);
+            Assert.True(result.SomeArray.Count() == 3);
+        }
+
+        [Fact]
+        public async Task ShouldPostSuccessfulHttpResponseWithPayload()
+        {
+            // arrange
+            var datetime = new DateTime(2013, 9, 1, 10, 9, 0);
+            const string requestUri = "/fake";
+            var payload = new FakePayload
+            {
+                Id = 190,
+                SomeArray = new []{ "lol1", "lol2", "lol3" },
+                DateTimeOffset = new DateTimeOffset(datetime, TimeSpan.FromHours(8)),
+                NonNullDateTime = datetime,
+                Note = "Note1",
+                Token = Guid.NewGuid(),
+                NullableDateTime = null
+            };
+            FakePayload result = null;
+            CancellationToken cancellationToken = CancellationToken.None;
+            var webHostBuilder = new WebHostBuilder()
+                .Configure(app =>
+                {
+                    app.Run(async context =>
+                    {
+                        FakePayload content = null;
+                        using (StreamReader reader = new StreamReader(context.Request.Body, Encoding.UTF8))
+                        {
+                            content = JsonConvert.DeserializeObject<FakePayload>(reader.ReadToEnd());
+                        }
+                        context.Response.ContentType = "application/json";
+                        var serialized = JsonConvert.SerializeObject(content);
+                        await context.Response.WriteAsync(serialized);
+                    });
+                });
+            TestServer server = new TestServer(webHostBuilder);
+            HttpClient client = server.CreateClient();
+            IHttpClientVerbBuilder<HttpClient> builder = new HttpClientVerbBuilder<HttpClient>(client);
+
+            // act
+            result = await client
+                .Request()
+                .Post(requestUri, new ObjectContent<FakePayload>(payload, new JsonMediaTypeFormatter()))
+                .Query("id", payload.Id)
+                .Query("note", payload.Note)
+                .AsAsync<FakePayload>(cancellationToken);
+
+            // assert
+            Assert.NotNull(result);
+            Assert.True(result.Id == payload.Id);
+            Assert.True(result.Note == payload.Note);
+            Assert.True(result.DateTimeOffset == payload.DateTimeOffset);
+            Assert.True(result.SomeArray.Count() == 3);
+            Assert.True(result.SomeArray[0] == "lol1");
+            Assert.True(result.SomeArray[1] == "lol2");
+            Assert.True(result.SomeArray[2] == "lol3");
+        }
+
+        [Fact]
+        public async Task ShouldPutSuccessfulHttpResponseWithPayload()
+        {
+            // arrange
+            var datetime = new DateTime(2013, 9, 1, 10, 9, 0);
+            const string requestUri = "/fake";
+            var payload = new FakePayload
+            {
+                Id = 190,
+                SomeArray = new[] { "lol1", "lol2", "lol3" },
+                DateTimeOffset = new DateTimeOffset(datetime, TimeSpan.FromHours(8)),
+                NonNullDateTime = datetime,
+                Note = "Note1",
+                Token = Guid.NewGuid(),
+                NullableDateTime = null
+            };
+            FakePayload result = null;
+            CancellationToken cancellationToken = CancellationToken.None;
+            var webHostBuilder = new WebHostBuilder()
+                .Configure(app =>
+                {
+                    app.Run(async context =>
+                    {
+                        FakePayload content = null;
+                        using (StreamReader reader = new StreamReader(context.Request.Body, Encoding.UTF8))
+                        {
+                            content = JsonConvert.DeserializeObject<FakePayload>(reader.ReadToEnd());
+                        }
+                        context.Response.ContentType = "application/json";
+                        var serialized = JsonConvert.SerializeObject(content);
+                        await context.Response.WriteAsync(serialized);
+                    });
+                });
+            TestServer server = new TestServer(webHostBuilder);
+            HttpClient client = server.CreateClient();
+            IHttpClientVerbBuilder<HttpClient> builder = new HttpClientVerbBuilder<HttpClient>(client);
+
+            // act
+            result = await client
+                .Request()
+                .Put(requestUri, new ObjectContent<FakePayload>(payload, new JsonMediaTypeFormatter()))
+                .Query("id", payload.Id)
+                .Query("note", payload.Note)
+                .AsAsync<FakePayload>(cancellationToken);
+
+            // assert
+            Assert.NotNull(result);
+            Assert.True(result.Id == payload.Id);
+            Assert.True(result.Note == payload.Note);
+            Assert.True(result.DateTimeOffset == payload.DateTimeOffset);
+            Assert.True(result.SomeArray.Count() == 3);
+            Assert.True(result.SomeArray[0] == "lol1");
+            Assert.True(result.SomeArray[1] == "lol2");
+            Assert.True(result.SomeArray[2] == "lol3");
         }
     }
 }
