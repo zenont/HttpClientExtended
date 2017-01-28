@@ -24,6 +24,7 @@ namespace HttpClientExtended.Interfaces
 
         IDictionary<string, IEnumerable<string>> Headers { get; }
 
+        Task<HttpRequestMessage> BuildHttpRequestAsync();
     }
 
     public interface IHttpClientQueryBuilder<T> : IHttpClientQueryBuilder where T : HttpClient
@@ -31,5 +32,7 @@ namespace HttpClientExtended.Interfaces
         new T HttpClient { get; }
 
         IHttpClientQueryBuilder<T> Query(string key, object value);
+
+        IHttpClientQueryBuilder<T> Header(string key, params string[] value);
     }
 }

@@ -51,21 +51,38 @@ namespace HttpClientExtended.Abstractions
             return this;
         }
 
+        public virtual async Task<HttpRequestMessage> BuildHttpRequestAsync()
+        {
+            if (string.IsNullOrWhiteSpace(RequestUri))
+                throw new ArgumentNullException(nameof(RequestUri));
+
+            if (HttpMethod == null)
+                throw new ArgumentNullException(nameof(HttpMethod));
+
+            if (!Uri.IsWellFormedUriString(RequestUri, UriKind.RelativeOrAbsolute))
+                throw new UriFormatException(RequestUri);
+
+            Uri uri = await QueryString.AsUriAsync(RequestUri);
+
+            var request = new HttpRequestMessage(HttpMethod, uri.ToString());
+
+            foreach (var header in Headers)
+            {
+                request.Headers.Add(header.Key, header.Value);
+            }
+
+            if (Content != null)
+            {
+                request.Content = Content;
+            }
+
+            return request;
+        }
+
         public async Task<HttpResponseMessage> SendAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
-            Uri uri = await QueryString.AsUriAsync(RequestUri);
-            using (HttpRequestMessage request = new HttpRequestMessage(HttpMethod, uri.ToString()))
+            using (HttpRequestMessage request = await BuildHttpRequestAsync())
             {
-                foreach(var header in Headers)
-                {
-                    request.Headers.Add(header.Key, header.Value);
-                }
-
-                if (Content != null)
-                {
-                    request.Content = Content;
-                }
-
                 return await HttpClient.SendAsync(request, cancellationToken);
             }
         }
