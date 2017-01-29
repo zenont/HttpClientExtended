@@ -1,11 +1,9 @@
 ﻿using HttpClientExtended.Common;
 using HttpClientExtended.Interfaces;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -14,8 +12,8 @@ namespace HttpClientExtended.Abstractions
     public class HttpClientQueryBuilder<T> : IHttpClientQueryBuilder<T> where T : HttpClient
     {
         protected const string SetCookieHeader = "Set-Cookie";
-        protected List<KeyValuePair<string, string[]>> _cookieHeaders = new List<KeyValuePair<string, string[]>>();
-        protected IDictionary<string, string[]> _headers = new Dictionary<string, string[]>();
+        private readonly List<KeyValuePair<string, string[]>> _cookieHeaders = new List<KeyValuePair<string, string[]>>();
+        private readonly IDictionary<string, string[]> _headers = new Dictionary<string, string[]>();
 
         public HttpClientQueryBuilder(T httpClient, HttpMethod httpMethod, string requestUri, HttpContent content = null)
         {
@@ -35,21 +33,9 @@ namespace HttpClientExtended.Abstractions
 
         public QueryString QueryString { get; protected set; } = new QueryString();
 
-        public IEnumerable<KeyValuePair<string, string[]>> Headers
-        {
-            get
-            {
-                return _headers.Union(_cookieHeaders);
-            }
-        }
+        public IEnumerable<KeyValuePair<string, string[]>> Headers => _headers.Union(_cookieHeaders);
 
-        HttpClient IHttpClientQueryBuilder.HttpClient
-        {
-            get
-            {
-                return HttpClient;
-            }
-        }
+        HttpClient IHttpClientQueryBuilder.HttpClient => HttpClient;
 
         public IHttpClientQueryBuilder<T> Query(string key, object value)
         {

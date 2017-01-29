@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -9,10 +8,6 @@ namespace HttpClientExtended.Common
 {
     public class QueryString:List<KeyValuePair<string, string>>
     {
-        public QueryString()
-        {
-        }
-
         protected virtual bool TryParseFromDate(object value, out string convertedValue)
         {
             convertedValue = null;
@@ -62,9 +57,9 @@ namespace HttpClientExtended.Common
 
         public virtual async Task<Uri> AsUriAsync(string baseUrl)
         {
-            if (string.IsNullOrEmpty(baseUrl)) throw new ArgumentNullException("baseUrl");
+            if (string.IsNullOrEmpty(baseUrl)) throw new ArgumentNullException(nameof(baseUrl));
 
-            UriKind uriKind = UriKind.RelativeOrAbsolute;
+            const UriKind uriKind = UriKind.RelativeOrAbsolute;
 
             Uri uri = !this.Any()
                 ? new Uri(baseUrl, uriKind)

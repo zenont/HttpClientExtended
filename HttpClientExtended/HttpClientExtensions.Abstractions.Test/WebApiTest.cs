@@ -70,19 +70,18 @@ namespace HttpClientExtensions.Abstractions.Test
                         int.TryParse(r, out parsedResult);
                         context.Response.ContentType = "application/json";
                         var resultPayload = JsonConvert.SerializeObject(new FakePayload { Id = parsedResult });
-                        await context.Response.WriteAsync(resultPayload);
+                        await context.Response.WriteAsync(resultPayload, cancellationToken);
                     });
                 });
             TestServer server = new TestServer(webHostBuilder);
             HttpClient client = server.CreateClient();
-            IHttpClientVerbBuilder<HttpClient> builder = new HttpClientVerbBuilder<HttpClient>(client);
 
             // act
             HttpResponseMessage response = await client
                 .Request()
                 .Get(requestUri)
                 .Query(nameof(id), id)
-                .SendAsync();
+                .SendAsync(cancellationToken);
 
             // assert
             Assert.True(response.IsSuccessStatusCode);
@@ -108,7 +107,7 @@ namespace HttpClientExtensions.Abstractions.Test
                         DateTime.TryParse(r, out parsedResult);
                         context.Response.ContentType = "application/json";
                         var resultPayload = JsonConvert.SerializeObject(new FakePayload { NonNullDateTime = parsedResult });
-                        await context.Response.WriteAsync(resultPayload);
+                        await context.Response.WriteAsync(resultPayload, cancellationToken);
                     });
                 });
             TestServer server = new TestServer(webHostBuilder);
@@ -153,12 +152,11 @@ namespace HttpClientExtensions.Abstractions.Test
                         DateTimeOffset.TryParse(r, out parsedResult);
                         context.Response.ContentType = "application/json";
                         var resultPayload = JsonConvert.SerializeObject(new FakePayload { DateTimeOffset = parsedResult });
-                        await context.Response.WriteAsync(resultPayload);
+                        await context.Response.WriteAsync(resultPayload, cancellationToken);
                     });
                 });
             TestServer server = new TestServer(webHostBuilder);
             HttpClient client = server.CreateClient();
-            IHttpClientVerbBuilder<HttpClient> builder = new HttpClientVerbBuilder<HttpClient>(client);
 
             // act
             HttpResponseMessage response = await client
@@ -200,7 +198,7 @@ namespace HttpClientExtensions.Abstractions.Test
                         int.TryParse(r, out parsedResult);
                         context.Response.ContentType = "application/json";
                         var resultPayload = JsonConvert.SerializeObject(new FakePayload { Id = parsedResult, Note = lolResult });
-                        await context.Response.WriteAsync(resultPayload);
+                        await context.Response.WriteAsync(resultPayload, cancellationToken);
                     });
                 });
             TestServer server = new TestServer(webHostBuilder);
@@ -213,7 +211,7 @@ namespace HttpClientExtensions.Abstractions.Test
                 .Get(requestUri)
                 .Query(nameof(id), id)
                 .Query(nameof(lol), lol)
-                .SendAsync();
+                .SendAsync(cancellationToken);
 
             // assert
             Assert.True(response.IsSuccessStatusCode);
@@ -244,12 +242,11 @@ namespace HttpClientExtensions.Abstractions.Test
                         int.TryParse(r, out parsedResult);
                         context.Response.ContentType = "application/json";
                         var resultPayload = JsonConvert.SerializeObject(new FakePayload { Id = parsedResult, Note = lolResult, SomeArray = colResult });
-                        await context.Response.WriteAsync(resultPayload);
+                        await context.Response.WriteAsync(resultPayload, cancellationToken);
                     });
                 });
             TestServer server = new TestServer(webHostBuilder);
             HttpClient client = server.CreateClient();
-            IHttpClientVerbBuilder<HttpClient> builder = new HttpClientVerbBuilder<HttpClient>(client);
 
             // act
             HttpResponseMessage response = await client
@@ -258,7 +255,7 @@ namespace HttpClientExtensions.Abstractions.Test
                 .Query(nameof(id), id)
                 .Query(nameof(lol), lol)
                 .QueryFromArray(nameof(col), col)
-                .SendAsync();
+                .SendAsync(cancellationToken);
 
             // assert
             Assert.True(response.IsSuccessStatusCode);
@@ -277,7 +274,6 @@ namespace HttpClientExtensions.Abstractions.Test
         public async Task ShouldHttpMethodPost()
         {
             // arrange
-            var datetime = new DateTime(2013, 9, 1, 10, 9, 0);
             const string requestUri = "/fake";
             string method = null;
             CancellationToken cancellationToken = CancellationToken.None;
@@ -292,7 +288,6 @@ namespace HttpClientExtensions.Abstractions.Test
                 });
             TestServer server = new TestServer(webHostBuilder);
             HttpClient client = server.CreateClient();
-            IHttpClientVerbBuilder<HttpClient> builder = new HttpClientVerbBuilder<HttpClient>(client);
 
             // act
             var response = await client
@@ -335,12 +330,11 @@ namespace HttpClientExtensions.Abstractions.Test
                         }
                         context.Response.ContentType = "application/json";
                         var serialized = JsonConvert.SerializeObject(content);
-                        await context.Response.WriteAsync(serialized);
+                        await context.Response.WriteAsync(serialized, cancellationToken);
                     });
                 });
             TestServer server = new TestServer(webHostBuilder);
             HttpClient client = server.CreateClient();
-            IHttpClientVerbBuilder<HttpClient> builder = new HttpClientVerbBuilder<HttpClient>(client);
 
             // act
             result = await client
@@ -380,7 +374,6 @@ namespace HttpClientExtensions.Abstractions.Test
                 });
             TestServer server = new TestServer(webHostBuilder);
             HttpClient client = server.CreateClient();
-            IHttpClientVerbBuilder<HttpClient> builder = new HttpClientVerbBuilder<HttpClient>(client);
 
             // act
             var response = await client
@@ -423,12 +416,11 @@ namespace HttpClientExtensions.Abstractions.Test
                         }
                         context.Response.ContentType = "application/json";
                         var serialized = JsonConvert.SerializeObject(content);
-                        await context.Response.WriteAsync(serialized);
+                        await context.Response.WriteAsync(serialized, cancellationToken);
                     });
                 });
             TestServer server = new TestServer(webHostBuilder);
             HttpClient client = server.CreateClient();
-            IHttpClientVerbBuilder<HttpClient> builder = new HttpClientVerbBuilder<HttpClient>(client);
 
             // act
             result = await client
@@ -443,7 +435,7 @@ namespace HttpClientExtensions.Abstractions.Test
             Assert.True(result.Id == payload.Id);
             Assert.True(result.Note == payload.Note);
             Assert.True(result.DateTimeOffset == payload.DateTimeOffset);
-            Assert.True(result.SomeArray.Count() == 3);
+            Assert.True(result.SomeArray.Length == 3);
             Assert.True(result.SomeArray[0] == "lol1");
             Assert.True(result.SomeArray[1] == "lol2");
             Assert.True(result.SomeArray[2] == "lol3");
@@ -467,13 +459,12 @@ namespace HttpClientExtensions.Abstractions.Test
                 });
             TestServer server = new TestServer(webHostBuilder);
             HttpClient client = server.CreateClient();
-            IHttpClientVerbBuilder<HttpClient> builder = new HttpClientVerbBuilder<HttpClient>(client);
 
             // act
             HttpResponseMessage response = await client
                 .Request()
                 .Delete(requestUri)
-                .SendAsync();
+                .SendAsync(cancellationToken);
 
             // assert
             Assert.True(response.IsSuccessStatusCode);
@@ -499,12 +490,11 @@ namespace HttpClientExtensions.Abstractions.Test
                         int.TryParse(r, out parsedResult);
                         context.Response.ContentType = "application/json";
                         var resultPayload = JsonConvert.SerializeObject(new FakePayload { Id = parsedResult, Note = lolResult });
-                        await context.Response.WriteAsync(resultPayload);
+                        await context.Response.WriteAsync(resultPayload, cancellationToken);
                     });
                 });
             TestServer server = new TestServer(webHostBuilder);
             HttpClient client = server.CreateClient();
-            IHttpClientVerbBuilder<HttpClient> builder = new HttpClientVerbBuilder<HttpClient>(client);
 
             // act
             HttpResponseMessage response = await client
@@ -512,7 +502,7 @@ namespace HttpClientExtensions.Abstractions.Test
                 .Delete(requestUri)
                 .Query(nameof(id), id)
                 .Query(nameof(lol), lol)
-                .SendAsync();
+                .SendAsync(cancellationToken);
 
             // assert
             Assert.True(response.IsSuccessStatusCode);
