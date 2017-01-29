@@ -66,5 +66,29 @@ namespace HttpClientExtensions.Abstractions.Test
             Assert.True(header.Quality == quality);
             Assert.True(header.Value == charset);
         }
+
+        [Theory]
+        [InlineData("Basic", "SOMEKEY")]
+        [InlineData("Bearer", "100920ZKDLLWO")]
+        public async Task ShouldSetAuthorizationHeaderInRequest(string scheme, string parameter)
+        {
+            // arrange
+            const string requestUri = "/fake";
+            HttpClient client = new HttpClient();
+            IHttpClientVerbBuilder<HttpClient> builder = new HttpClientVerbBuilder<HttpClient>(client);
+
+            // act
+            HttpRequestMessage httpRequest = await client
+                .Request()
+                .Get(requestUri)
+                .Header("Authorization", $"{scheme} {parameter}")
+                .BuildHttpRequestAsync();
+            AuthenticationHeaderValue header = httpRequest.Headers.Authorization;
+
+            // assert
+            Assert.NotNull(header);
+            Assert.True(header.Scheme == scheme);
+            Assert.True(header.Parameter == parameter);
+        }
     }
 }
