@@ -9,7 +9,7 @@ namespace HttpClientExtended.Abstractions.Extensions
 {
     public static class HttpClientQueryBuilderExtensions
     {
-        public static IHttpClientQueryBuilder<KClient> QueryFromArray<KClient, TValue>(this IHttpClientQueryBuilder<KClient> builder, string key, IEnumerable<TValue> value) where KClient:HttpClient
+        public static IHttpClientQueryBuilder<TKClient> QueryFromArray<TKClient, TValue>(this IHttpClientQueryBuilder<TKClient> builder, string key, IEnumerable<TValue> value) where TKClient:HttpClient
         {
             foreach (TValue arrayValue in value)
             {
@@ -22,10 +22,10 @@ namespace HttpClientExtended.Abstractions.Extensions
         public static async Task<T> AsAsync<T>(this IHttpClientQueryBuilder builder, CancellationToken cancellationToken = default(CancellationToken))
         {
             HttpResponseMessage response = await builder.SendAsync(cancellationToken);
-            return await response.Content.ReadAsAsync<T>();
+            return await response.Content.ReadAsAsync<T>(cancellationToken);
         }
 
-        public static async Task<Stream> AsStreamAsync<T>(this IHttpClientQueryBuilder builder, CancellationToken cancellationToken = default(CancellationToken))
+        public static async Task<Stream> AsStreamAsync(this IHttpClientQueryBuilder builder, CancellationToken cancellationToken = default(CancellationToken))
         {
             HttpResponseMessage response = await builder.SendAsync(cancellationToken);
             return await response.Content.ReadAsStreamAsync();

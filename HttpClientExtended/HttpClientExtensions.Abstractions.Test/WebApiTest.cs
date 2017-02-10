@@ -2,7 +2,6 @@
 using HttpClientExtended.Interfaces;
 using Microsoft.AspNetCore.TestHost;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
@@ -45,7 +44,7 @@ namespace HttpClientExtensions.Abstractions.Test
             HttpResponseMessage response = await client
                 .Request()
                 .Get(requestUri)
-                .SendAsync();
+                .SendAsync(cancellationToken);
 
             // assert
             Assert.True(response.IsSuccessStatusCode);
@@ -119,7 +118,7 @@ namespace HttpClientExtensions.Abstractions.Test
                 .Request()
                 .Get(requestUri)
                 .Query(nameof(value), value)
-                .SendAsync();
+                .SendAsync(cancellationToken);
 
             // assert
             Assert.True(response.IsSuccessStatusCode);
@@ -163,7 +162,7 @@ namespace HttpClientExtensions.Abstractions.Test
                 .Request()
                 .Get(requestUri)
                 .Query(nameof(value), value)
-                .SendAsync();
+                .SendAsync(cancellationToken);
 
             // assert
             Assert.True(response.IsSuccessStatusCode);
@@ -203,7 +202,6 @@ namespace HttpClientExtensions.Abstractions.Test
                 });
             TestServer server = new TestServer(webHostBuilder);
             HttpClient client = server.CreateClient();
-            IHttpClientVerbBuilder<HttpClient> builder = new HttpClientVerbBuilder<HttpClient>(client);
 
             // act
             HttpResponseMessage response = await client

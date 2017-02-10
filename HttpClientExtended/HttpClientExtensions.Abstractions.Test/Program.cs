@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace HttpClientExtensions.Abstractions.Test
+﻿namespace HttpClientExtensions.Abstractions.Test
 {
     public class Program
     {
